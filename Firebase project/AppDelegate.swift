@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import Firebase
+import FBSDKCoreKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -16,8 +18,69 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        FirebaseApp.configure()
+//        do {
+//            try!  Auth.auth().signOut()
+//        }catch{
+//            print(error)
+//        }
+//
+        
+        // to make anonymous users
+        
+//        Auth.auth().signInAnonymously() { (user, error) in
+//            // ...
+//            if let error = error {
+//                print(error.localizedDescription)
+//            }else if let user = user {
+//                print("Anonymous user")
+//            }else {
+//                print("Anonymous error")
+//            }
+//        }
+       
+        
+        // check if the user log or not
+        Auth.auth().addStateDidChangeListener { (Auth, user) in
+            if let user = user {
+                // user logged in
+               print(user)
+                if let rootVC = self.window?.rootViewController as? UINavigationController, rootVC.topViewController is MainVC {
+                    
+                }else {
+                    let sb = UIStoryboard(name: "Main", bundle: nil)
+                    let vc = sb.instantiateViewController(withIdentifier: "MainVC")
+                  
+                    self.window?.rootViewController = vc
+                }
+            
+            
+            }else {
+                print("user logged out")
+                
+                let sb = UIStoryboard(name: "Main", bundle: nil)
+               let vc = sb.instantiateViewController(withIdentifier: "rootVC")
+
+              self.window?.rootViewController = vc
+            }
+        }
+        
+        
+        
+        
+        
         return true
     }
+    // to retrieve info from fb
+    
+    func application(application :UIApplication, open url: URL, sourceApplication: String?, annotation: Any) -> Bool {
+        return FBSDKApplicationDelegate.sharedInstance().application(application, open: url, sourceApplication: sourceApplication, annotation: annotation)
+    }
+ 
+    
+
+    
+    
 
     func applicationWillResignActive(_ application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
